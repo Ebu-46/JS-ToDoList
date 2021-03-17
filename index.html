@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Todo List</title>
+  <style>
+    .center {
+      margin: auto;
+      width: 60%;
+      padding: 10px;
+    }
+  </style>
+</head>
+
+<body class="center">
+  <h1>Welcome in Todo List Application</h1>
+  
+  <div>
+    <div>
+      
+        <input type="text" placeholder="Enter your task" id="addtaskinput" />
+        <input type="hidden" id="saveindex">
+      
+      <button id="addtaskbtn">
+        Add Task
+      </button>
+      <button id="savetaskbtn" style="display: none;">
+        Save Task
+      </button>
+      <button id="deleteallbtn">
+        Delete All
+      </button>
+    </div>
+
+    <br>
+
+    <div>
+      <table id="addedtasklist">
+        
+      </table>
+    </div>
+  </div>
+
+  <script src="ToDoList.js"></script>
+</body>
+
+</html>
