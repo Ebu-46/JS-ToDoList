@@ -1,39 +1,61 @@
-showtask();
+function read_task() {
+    let allLocaltasks = localStorage.getItem("localtask");
+    let taskArr;
+    if(allLocaltasks == null){
+        taskArr = [];
+    }
+    else{
+        taskArr = JSON.parse(allLocaltasks);
+        taskArr.sort((a, b) => (a.task_name > b.task_name) ? 1 : -1)
+        //console.log(taskArr);
+    }
+    return taskArr;
+}
+
+function write_task(taskArr) {
+    localStorage.setItem("localtask", JSON.stringify(taskArr));
+}
+
+
 let addtaskinput = document.getElementById("addtaskinput");
 let addtaskbtn = document.getElementById("addtaskbtn");
+let completedbtn = document.getElementById("completedbtn");
+let incompletedbtn = document.getElementById("incompletedbtn");
+let taskArr = read_task();
+showtask(taskArr);
+
+completedbtn.addEventListener("click", function(){
+    taskArr.sort((a, b) => (a.completeStatus == b.completeStatus) ? ((a.task_name > b.task_name) ? 1 : -1) : ((a.completeStatus > b.completeStatus) ? -1 : 1));
+    let completedArray = taskArr.filter((a) => a.completeStatus);
+    showtask(completedArray);
+})
+
+incompletedbtn.addEventListener("click", function(){
+    taskArr.sort((a, b) => (a.completeStatus == b.completeStatus) ? ((a.task_name > b.task_name) ? 1 : -1) : ((a.completeStatus > b.completeStatus) ? 1 : -1));
+    let incompletedArray = taskArr.filter((a) => !a.completeStatus);
+    showtask(incompletedArray);
+})
+
 
 addtaskbtn.addEventListener("click", function(){
     addtaskinputval = addtaskinput.value;
     if(addtaskinputval.trim()!=0){
-        let webtask = localStorage.getItem("localtask");
-        let taskObj;
-        if(webtask == null){
-            taskObj = [];
-        }
-        else{
-            taskObj = JSON.parse(webtask);
-        }
-        taskObj.push({'task_name':addtaskinputval, 'completeStatus':false});
+        
+        taskArr.push({'task_name':addtaskinputval, 'completeStatus':false});
 		
-        localStorage.setItem("localtask", JSON.stringify(taskObj));
+        write_task(taskArr);
         addtaskinput.value = '';
     }
-    showtask();
+    taskArr = read_task();
+    showtask(taskArr);
 })
 
 // showtask
-function showtask(){
-    let webtask = localStorage.getItem("localtask");
-    let taskObj;
-    if(webtask == null){
-        taskObj = [];
-    }
-    else{
-        taskObj = JSON.parse(webtask);
-    }
+function showtask(taskArray){
+    
     let html = '';
     let addedtasklist = document.getElementById("addedtasklist");
-    taskObj.forEach((item, index) => {
+    taskArray.forEach((item, index) => {
 
         if(item.completeStatus==true){
             taskCompleteValue = `<td> <s>${item.task_name}</s></td>`;
@@ -57,10 +79,8 @@ function edittask(index){
     let addtaskbtn = document.getElementById("addtaskbtn");
     let savetaskbtn = document.getElementById("savetaskbtn");
     saveindex.value = index;
-    let webtask = localStorage.getItem("localtask");
-    let taskObj = JSON.parse(webtask); 
     
-    addtaskinput.value = taskObj[index]['task_name'];
+    addtaskinput.value = taskArr[index]['task_name'];
     addtaskbtn.style.display="none";
     savetaskbtn.style.display="inline";
 }
@@ -69,41 +89,35 @@ function edittask(index){
 let savetaskbtn = document.getElementById("savetaskbtn");
 savetaskbtn.addEventListener("click", function(){
     let addtaskbtn = document.getElementById("addtaskbtn");
-    let webtask = localStorage.getItem("localtask");
-    let taskObj = JSON.parse(webtask); 
     let saveindex = document.getElementById("saveindex").value;
     
-    taskObj[saveindex]['task_name'] = addtaskinput.value;
+    taskArr[saveindex]['task_name'] = addtaskinput.value;
     
     
     savetaskbtn.style.display="none";
     addtaskbtn.style.display="inline";
-    localStorage.setItem("localtask", JSON.stringify(taskObj));
+    write_task(taskArr);
     addtaskinput.value='';
-    showtask();
+    taskArr=read_task();
+    showtask(taskArr);
 })
 // deleteitem
 function deleteitem(index){
-    let webtask = localStorage.getItem("localtask");
-    let taskObj = JSON.parse(webtask);
-    taskObj.splice(index, 1);
-    localStorage.setItem("localtask", JSON.stringify(taskObj));
-    showtask();
+    taskArr.splice(index, 1);
+    write_task(taskArr);
+    taskArr=read_task();
+    showtask(taskArr);
 }
 
 
 // complete task
 function completetask(index){
-    let webtask = localStorage.getItem("localtask");
-    let taskObj = JSON.parse(webtask);
-    if(taskObj[index].completeStatus==true){
-        taskObj[index].completeStatus=false;
-    }else{
-        taskObj[index].completeStatus=true;
-    }
-    //console.log(taskObj[index].completeStatus);
-    localStorage.setItem("localtask", JSON.stringify(taskObj));
-    showtask();
+    taskArr[index].completeStatus=!taskArr[index].completeStatus;
+    
+    //console.log(taskArray[index].completeStatus);
+    write_task(taskArr);
+    taskArr=read_task();
+    showtask(taskArr);
 }
 
 // deleteall
@@ -111,19 +125,11 @@ let deleteallbtn = document.getElementById("deleteallbtn");
 deleteallbtn.addEventListener("click", function(){
     let savetaskbtn = document.getElementById("savetaskbtn");
     let addtaskbtn = document.getElementById("addtaskbtn");
-    let webtask = localStorage.getItem("localtask");
-    let taskObj = JSON.parse(webtask);
-    if(webtask == null){
-        taskObj = [];
-    }
-    else{
-        taskObj = JSON.parse(webtask);
-        taskObj = [];
-    }
+    taskArr = [];
     savetaskbtn.style.display="none";
     addtaskbtn.style.display="inline";
-    localStorage.setItem("localtask", JSON.stringify(taskObj));
-    showtask();
+    write_task(taskArr);
+    showtask(taskArr);
 
 })
 
